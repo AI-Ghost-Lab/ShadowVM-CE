@@ -1,0 +1,327 @@
+//
+//  ConfigurationViewController.swift
+//  ShadowVM
+//
+//  Created by Saagar Jha on 11/20/21.
+//
+
+import Cocoa
+
+@MainActor
+class ConfigurationViewController: NSViewController, NSTextFieldDelegate {
+  var virtualMachine: VirtualMachine!
+  var vmController: ShadowVMCEVMController!
+  var cpuCountSlider: LabeledSlider!
+  var memorySlider: LabeledSlider!
+  var screenWidthTextField: NSTextField!
+  var screenHeightTextField: NSTextField!
+  var screenScaleCheckbox: NSButton!
+  var screenInformationalLabel: NSTextField!
+  var bootIntoMacOSRecoveryCheckbox: NSButton!
+  var bootIntoDFUCheckbox: NSButton!
+  var haltOnPanicCheckbox: NSButton!
+  var haltInIBoot1Checkbox: NSButton!
+  var haltInIBoot2Checkbox: NSButton!
+  var debugCheckbox: NSButton!
+  var debugPortTextField: NSTextField!
+  var saveButton: NSButton!
+  var cpuCounts: [Int]!
+  var memories: [UInt64]!
+
+  convenience init(virtualMachine: VirtualMachine, controller: ShadowVMCEVMController) {
+    self.init()
+    self.virtualMachine = virtualMachine
+    vmController = controller
+    cpuCounts = Array(1...ProcessInfo.processInfo.activeProcessorCount)
+    memories = (1...(ProcessInfo.processInfo.physicalMemory >> 30)).map {
+      $0 << 30
+    }
+  }
+
+  override func loadView() {
+    let view = NSView()
+    view.setAccessibilityIdentifier(AccessibilityID.Configuration.root)
+
+    let cpuCountLabel = NSTextField(labelWithString: "CPU count:")
+    cpuCountLabel.setAccessibilityIdentifier(AccessibilityID.Configuration.cpuLabel)
+    cpuCountSlider = LabeledSlider(labels: cpuCounts.map(String.init))
+    cpuCountSlider.applyAccessibilityIdentifiers(baseID: AccessibilityID.Configuration.cpuCount)
+    if let cpuCount = virtualMachine.metadata.configuration?.cpuCount {
+      cpuCountSlider.tickValue = cpuCount - 1
+    } else {
+      cpuCountSlider.tickValue = defaultCpuTickValue()
+    }
+    let cpuCountStackView = NSStackView(fixedSizeViews: [cpuCountLabel, cpuCountSlider])
+    cpuCountStackView.alignment = .firstBaseline
+
+    let memoryLabel = NSTextField(labelWithString: "Memory:")
+    memoryLabel.setAccessibilityIdentifier(AccessibilityID.Configuration.memoryLabel)
+    let formatter = ByteCountFormatter()
+    formatter.countStyle = .memory
+    memorySlider = LabeledSlider(
+      labels: memories.map {
+        formatter.string(fromByteCount: Int64($0))
+      })
+    memorySlider.applyAccessibilityIdentifiers(baseID: AccessibilityID.Configuration.memory)
+    if let memory = virtualMachine.metadata.configuration?.memorySize {
+      memorySlider.tickValue = Int(memory >> 30) - 1
+    } else {
+      memorySlider.tickValue = defaultMemoryTickValue()
+    }
+    let memoryStackView = NSStackView(fixedSizeViews: [memoryLabel, memorySlider])
+    memoryStackView.alignment = .firstBaseline
+
+    let screenLabel = NSTextField(labelWithString: "Screen:")
+    screenLabel.setAccessibilityIdentifier(AccessibilityID.Configuration.screenLabel)
+    screenWidthTextField = NSTextField()
+    screenWidthTextField.delegate = self
+    screenWidthTextField.placeholderString = "Width"
+    screenWidthTextField.setAccessibilityIdentifier(AccessibilityID.Configuration.screenWidth)
+    if let width = virtualMachine.metadata.configuration?.screenWidth {
+      screenWidthTextField.stringValue = "\(width)"
+    } else {
+      screenWidthTextField.stringValue = "\(defaultScreenSize().width)"
+    }
+    let screenMutiplicationLabel = NSTextField(labelWithString: "x")
+    screenMutiplicationLabel.setAccessibilityIdentifier(AccessibilityID.Configuration.screenMultiplier)
+    screenHeightTextField = NSTextField()
+    screenHeightTextField.delegate = self
+    screenHeightTextField.placeholderString = "Height"
+    screenHeightTextField.setAccessibilityIdentifier(AccessibilityID.Configuration.screenHeight)
+    if let height = virtualMachine.metadata.configuration?.screenHeight {
+      screenHeightTextField.stringValue = "\(height)"
+    } else {
+      screenHeightTextField.stringValue = "\(defaultScreenSize().height)"
+    }
+    screenScaleCheckbox = NSButton(
+      checkboxWithTitle: "Retina", target: self, action: #selector(retinaChanged(_:)))
+    screenScaleCheckbox.setAccessibilityIdentifier(AccessibilityID.Configuration.retina)
+    if let scale = virtualMachine.metadata.configuration?.screenScale {
+      screenScaleCheckbox.state = scale > 1 ? .on : .off
+    } else {
+      screenScaleCheckbox.state = ShadowVMCEDefaults.defaultScreenScale > 1 ? .on : .off
+    }
+    let innerScreenStackView = NSStackView(fixedSizeViews: [
+      screenWidthTextField, screenMutiplicationLabel, screenHeightTextField, screenScaleCheckbox,
+    ])
+    innerScreenStackView.alignment = .firstBaseline
+    screenInformationalLabel = NSTextField(wrappingLabelWithString: "Measured in points.")
+    screenInformationalLabel.textColor = .secondaryLabelColor
+    screenInformationalLabel.font = .systemFont(ofSize: NSFont.systemFontSize(for: .small))
+    screenInformationalLabel.setAccessibilityIdentifier(AccessibilityID.Configuration.screenInfo)
+    let screenItemsStackView = NSStackView(fixedSizeViews: [
+      innerScreenStackView, screenInformationalLabel,
+    ])
+    screenItemsStackView.orientation = .vertical
+    screenItemsStackView.alignment = .leading
+    let screenStackView = NSStackView(fixedSizeViews: [screenLabel, screenItemsStackView])
+
+    let bootLabel = NSTextField(labelWithString: "Boot:")
+    bootLabel.setAccessibilityIdentifier(AccessibilityID.Configuration.bootLabel)
+    bootIntoMacOSRecoveryCheckbox = NSButton(
+      checkboxWithTitle: "Into macOS Recovery", target: nil, action: nil)
+    bootIntoMacOSRecoveryCheckbox.setAccessibilityIdentifier(AccessibilityID.Configuration.bootRecovery)
+    if let bootIntoMacOSRecovery = virtualMachine.metadata.configuration?.bootIntoMacOSRecovery {
+      bootIntoMacOSRecoveryCheckbox.state = bootIntoMacOSRecovery ? .on : .off
+    }
+    bootIntoDFUCheckbox = NSButton(checkboxWithTitle: "Into DFU", target: nil, action: nil)
+    bootIntoDFUCheckbox.setAccessibilityIdentifier(AccessibilityID.Configuration.bootDFU)
+    if let bootIntoDFU = virtualMachine.metadata.configuration?.bootIntoDFU {
+      bootIntoDFUCheckbox.state = bootIntoDFU ? .on : .off
+    }
+    let bootItemsStackView = NSStackView(fixedSizeViews: [
+      bootIntoMacOSRecoveryCheckbox, bootIntoDFUCheckbox,
+    ])
+    bootItemsStackView.orientation = .vertical
+    bootItemsStackView.alignment = .leading
+    let bootStackView = NSStackView(fixedSizeViews: [bootLabel, bootItemsStackView])
+    bootStackView.alignment = .firstBaseline
+
+    let haltLabel = NSTextField(labelWithString: "Halt:")
+    haltLabel.setAccessibilityIdentifier(AccessibilityID.Configuration.haltLabel)
+    haltOnPanicCheckbox = NSButton(checkboxWithTitle: "On Panic", target: nil, action: nil)
+    haltOnPanicCheckbox.disableResizing()
+    haltOnPanicCheckbox.setAccessibilityIdentifier(AccessibilityID.Configuration.haltPanic)
+    if let haltOnPanic = virtualMachine.metadata.configuration?.haltOnPanic {
+      haltOnPanicCheckbox.state = haltOnPanic ? .on : .off
+    }
+    haltInIBoot1Checkbox = NSButton(checkboxWithTitle: "In iBoot Stage 1", target: nil, action: nil)
+    haltInIBoot1Checkbox.disableResizing()
+    haltInIBoot1Checkbox.setAccessibilityIdentifier(AccessibilityID.Configuration.haltIBoot1)
+    if let haltInIBoot1 = virtualMachine.metadata.configuration?.haltInIBoot1 {
+      haltInIBoot1Checkbox.state = haltInIBoot1 ? .on : .off
+    }
+    haltInIBoot2Checkbox = NSButton(checkboxWithTitle: "In iBoot Stage 2", target: nil, action: nil)
+    haltInIBoot2Checkbox.disableResizing()
+    haltInIBoot2Checkbox.setAccessibilityIdentifier(AccessibilityID.Configuration.haltIBoot2)
+    if let haltInIBoot2 = virtualMachine.metadata.configuration?.haltInIBoot2 {
+      haltInIBoot2Checkbox.state = haltInIBoot2 ? .on : .off
+    }
+    let haltItemsStackView = NSStackView(fixedSizeViews: [
+      haltOnPanicCheckbox, haltInIBoot1Checkbox, haltInIBoot2Checkbox,
+    ])
+    haltItemsStackView.orientation = .vertical
+    haltItemsStackView.alignment = .leading
+    let haltStackView = NSStackView(fixedSizeViews: [haltLabel, haltItemsStackView])
+
+    let debugLabel = NSTextField(labelWithString: "Debug:")
+    debugLabel.setAccessibilityIdentifier(AccessibilityID.Configuration.debugLabel)
+    debugCheckbox = NSButton(
+      checkboxWithTitle: "Run GDB stub on port", target: self, action: #selector(debugChanged(_:)))
+    debugCheckbox.setAccessibilityIdentifier(AccessibilityID.Configuration.debugEnabled)
+    debugPortTextField = NSTextField()
+    debugPortTextField.delegate = self
+    debugPortTextField.placeholderString = "5555"
+    debugPortTextField.setAccessibilityIdentifier(AccessibilityID.Configuration.debugPort)
+    if let debugPort = virtualMachine.metadata.configuration?.debugPort {
+      debugCheckbox.state = .on
+      debugPortTextField.stringValue = "\(debugPort)"
+    }
+    let innerDebugStackView = NSStackView(fixedSizeViews: [debugCheckbox, debugPortTextField])
+    innerDebugStackView.alignment = .firstBaseline
+    let debugInformationalLabel = NSTextField(
+      wrappingLabelWithString:
+        "Starting a virtual machine with the GDB stub requires the com.apple.private.virtualization entitlement in this process."
+    )
+    debugInformationalLabel.textColor = .secondaryLabelColor
+    debugInformationalLabel.font = .systemFont(ofSize: NSFont.systemFontSize(for: .small))
+    debugInformationalLabel.setAccessibilityIdentifier(AccessibilityID.Configuration.debugInfo)
+    let debugItemsStackView = NSStackView(fixedSizeViews: [
+      innerDebugStackView, debugInformationalLabel,
+    ])
+    debugItemsStackView.orientation = .vertical
+    debugItemsStackView.alignment = .leading
+    let debugStackView = NSStackView(fixedSizeViews: [debugLabel, debugItemsStackView])
+
+    @MainActor
+    func separator() -> NSBox {
+      let box = NSBox()
+      box.boxType = .separator
+      return box
+    }
+
+    let optionsStackView = NSStackView(views: [
+      cpuCountStackView,
+      memoryStackView,
+      separator(),
+      screenStackView,
+      separator(),
+      bootStackView,
+      haltStackView,
+      separator(),
+      debugStackView,
+    ])
+    optionsStackView.orientation = .vertical
+    optionsStackView.spacing *= 2
+    view.addSubview(optionsStackView)
+
+    saveButton = NSButton(title: "Save", target: self, action: #selector(save(_:)))
+    saveButton.translatesAutoresizingMaskIntoConstraints = false
+    saveButton.keyEquivalent = "\r"
+    saveButton.setAccessibilityIdentifier(AccessibilityID.Configuration.saveButton)
+    view.addSubview(saveButton)
+
+    NSLayoutConstraint.activate([
+      optionsStackView.leadingAnchor.constraint(
+        equalToSystemSpacingAfter: view.leadingAnchor, multiplier: 1),
+      view.trailingAnchor.constraint(
+        equalToSystemSpacingAfter: optionsStackView.trailingAnchor, multiplier: 1),
+      optionsStackView.topAnchor.constraint(
+        equalToSystemSpacingBelow: view.topAnchor, multiplier: 1),
+      cpuCountLabel.trailingAnchor.constraint(equalTo: memoryLabel.trailingAnchor),
+      memoryLabel.trailingAnchor.constraint(equalTo: screenLabel.trailingAnchor),
+      screenLabel.trailingAnchor.constraint(equalTo: bootLabel.trailingAnchor),
+      bootLabel.trailingAnchor.constraint(equalTo: haltLabel.trailingAnchor),
+      haltLabel.trailingAnchor.constraint(equalTo: debugLabel.trailingAnchor),
+      cpuCountSlider.widthAnchor.constraint(equalToConstant: 400),
+      cpuCountSlider.widthAnchor.constraint(equalTo: memorySlider.widthAnchor),
+      screenWidthTextField.widthAnchor.constraint(equalToConstant: 64),
+      screenHeightTextField.widthAnchor.constraint(equalToConstant: 64),
+      screenLabel.firstBaselineAnchor.constraint(equalTo: innerScreenStackView.firstBaselineAnchor),
+      haltLabel.firstBaselineAnchor.constraint(equalTo: haltOnPanicCheckbox.firstBaselineAnchor),
+      debugPortTextField.widthAnchor.constraint(equalToConstant: 64),
+      debugLabel.firstBaselineAnchor.constraint(equalTo: innerDebugStackView.firstBaselineAnchor),
+      debugInformationalLabel.widthAnchor.constraint(lessThanOrEqualTo: cpuCountSlider.widthAnchor),
+      saveButton.widthAnchor.constraint(equalToConstant: 64),
+      saveButton.topAnchor.constraint(
+        equalToSystemSpacingBelow: optionsStackView.bottomAnchor, multiplier: 1),
+      view.trailingAnchor.constraint(
+        equalToSystemSpacingAfter: saveButton.trailingAnchor, multiplier: 1),
+      view.bottomAnchor.constraint(
+        equalToSystemSpacingBelow: saveButton.bottomAnchor, multiplier: 1),
+    ])
+
+    optionsStackView.fitContents()
+
+    validateUI()
+
+    self.view = view
+  }
+
+  func validateUI() {
+    let scale = screenScaleCheckbox.state == .on ? 2 : 1
+    let width = Int(screenWidthTextField.stringValue)
+    let height = Int(screenHeightTextField.stringValue)
+    if let width, let height {
+      screenInformationalLabel.stringValue =
+        "Measured in points. Exposed to the guest as a \(width * scale)x\(height * scale) \(screenScaleCheckbox.state == .on ? "HiDPI" : "LoDPI") display."
+    } else {
+      screenInformationalLabel.stringValue = "Measured in points."
+    }
+    debugPortTextField.isEnabled = debugCheckbox.state == .on
+    saveButton.isEnabled =
+      width != nil && height != nil
+      && (!debugPortTextField.isEnabled || Int(debugPortTextField.stringValue) != nil)
+  }
+
+  @IBAction func retinaChanged(_ sender: NSButton) {
+    validateUI()
+  }
+
+  @IBAction func debugChanged(_ sender: NSButton) {
+    validateUI()
+  }
+
+  func controlTextDidChange(_ obj: Notification) {
+    validateUI()
+  }
+
+  @IBAction func save(_ sender: NSButton) {
+    let configuration = Configuration(
+      cpuCount: cpuCounts[cpuCountSlider.tickValue],
+      memorySize: memories[memorySlider.tickValue],
+      screenWidth: Int(screenWidthTextField.stringValue)!,
+      screenHeight: Int(screenHeightTextField.stringValue)!,
+      screenScale: screenScaleCheckbox.state == .on ? 2 : 1,
+      bootIntoMacOSRecovery: bootIntoMacOSRecoveryCheckbox.state == .on,
+      bootIntoDFU: bootIntoDFUCheckbox.state == .on,
+      haltOnPanic: haltOnPanicCheckbox.state == .on,
+      haltInIBoot1: haltInIBoot1Checkbox.state == .on,
+      haltInIBoot2: haltInIBoot2Checkbox.state == .on,
+      debugPort: debugPortTextField.isEnabled ? Int(debugPortTextField.stringValue) : nil
+    )
+    Task { @MainActor in
+      do {
+        try vmController.updateConfiguration(for: virtualMachine, configuration: configuration)
+        (view.window!.sheetParent!.windowController as! WindowController).dismiss(self)
+      } catch {
+        NSAlert(error: error).runModal()
+      }
+    }
+  }
+
+  private func defaultCpuTickValue() -> Int {
+    let target = ShadowVMCEDefaults.defaultCpuCount()
+    return max(0, min(cpuCounts.count - 1, target - 1))
+  }
+
+  private func defaultMemoryTickValue() -> Int {
+    let bytes = ShadowVMCEDefaults.defaultMemoryBytes()
+    let target = max(1, Int(bytes >> 30))
+    return max(0, min(memories.count - 1, target - 1))
+  }
+
+  private func defaultScreenSize() -> (width: Int, height: Int) {
+    ShadowVMCEDefaults.defaultScreenSize()
+  }
+}

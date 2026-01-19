@@ -1,0 +1,583 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 70;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0A051758384343DA9891BD03 /* libShadowVMCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63563573AB154D81AA61A90E /* libShadowVMCore.a */; };
+		493243FF2749D9F0003E8999 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493243FE2749D9F0003E8999 /* AppDelegate.swift */; };
+		493244052749D9F1003E8999 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 493244042749D9F1003E8999 /* Assets.xcassets */; };
+		495E100A2856AEE80034F53F /* ConcurrencyShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495E10092856AEE80034F53F /* ConcurrencyShims.swift */; };
+		4969636D274C98AE00339822 /* FixedSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4969636C274C98AE00339822 /* FixedSize.swift */; };
+		49D086FA274A7C3400859181 /* InstallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D086F9274A7C3400859181 /* InstallViewController.swift */; };
+		49D08701274BBD6300859181 /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D08700274BBD6300859181 /* Menu.swift */; };
+		49D08703274BBDF000859181 /* LabeledSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D08702274BBDF000859181 /* LabeledSlider.swift */; };
+		49D08705274BBE2A00859181 /* Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D08704274BBE2A00859181 /* Toolbar.swift */; };
+		49F82D422749E80C004D986D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F82D412749E80C004D986D /* main.swift */; };
+		49F82D46274A0609004D986D /* VirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F82D45274A0609004D986D /* VirtualMachine.swift */; };
+		49F82D48274A0CC5004D986D /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F82D47274A0CC5004D986D /* WindowController.swift */; };
+		49F82D4C274A0D98004D986D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F82D4B274A0D98004D986D /* ViewController.swift */; };
+		49F82D4E274A21C5004D986D /* ConfigurationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F82D4D274A21C5004D986D /* ConfigurationViewController.swift */; };
+		9E5C8B382F08C83E003476BB /* AccessibilityIdentifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5C8B372F08C83E003476BB /* AccessibilityIdentifiers.swift */; };
+		9ECC0BF22F0C11C300EFF53B /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 9ECC0BF12F0C11C300EFF53B /* Logging */; };
+		A1B2C3D4E5F6010203040508 /* ShadowVMCECLI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6010203040506 /* ShadowVMCECLI.swift */; };
+		A1B2C3D4E5F6010203040509 /* ShadowVMCEDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6010203040507 /* ShadowVMCEDefaults.swift */; };
+		A1B2C3D4E5F6010203040512 /* ShadowVMCEVMController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6010203040511 /* ShadowVMCEVMController.swift */; };
+		B3F1A2C3D4E5F60718293A4C /* ShadowVMCESettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F1A2C3D4E5F60718293A4B /* ShadowVMCESettings.swift */; };
+		B3F1A2C3D4E5F60718293A4D /* ShadowVMCELogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F1A2C3D4E5F60718293A4E /* ShadowVMCELogging.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9ECC0C092F120DB300EFF53B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 493243F32749D9F0003E8999 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 493243FA2749D9F0003E8999;
+			remoteInfo = ShadowVM;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		493243FB2749D9F0003E8999 /* ShadowVM-CE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ShadowVM-CE.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		493243FE2749D9F0003E8999 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		493244042749D9F1003E8999 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		493244092749D9F1003E8999 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4932440A2749D9F1003E8999 /* ShadowVM.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShadowVM.entitlements; sourceTree = "<group>"; };
+		495E10092856AEE80034F53F /* ConcurrencyShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrencyShims.swift; sourceTree = "<group>"; };
+		4969636C274C98AE00339822 /* FixedSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedSize.swift; sourceTree = "<group>"; };
+		49D086F9274A7C3400859181 /* InstallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstallViewController.swift; sourceTree = "<group>"; };
+		49D086FB274BBA3700859181 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		49D086FC274BBA4A00859181 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+		49D086FD274BBA6800859181 /* Deployment.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Deployment.xcconfig; sourceTree = "<group>"; };
+		49D086FE274BBA8400859181 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		49D086FF274BBA9C00859181 /* ShadowVM.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = ShadowVM.xcconfig; sourceTree = "<group>"; };
+		49D08700274BBD6300859181 /* Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
+		49D08702274BBDF000859181 /* LabeledSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledSlider.swift; sourceTree = "<group>"; };
+		49D08704274BBE2A00859181 /* Toolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toolbar.swift; sourceTree = "<group>"; };
+		49F82D412749E80C004D986D /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		49F82D45274A0609004D986D /* VirtualMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualMachine.swift; sourceTree = "<group>"; };
+		49F82D47274A0CC5004D986D /* WindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
+		49F82D4B274A0D98004D986D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		49F82D4D274A21C5004D986D /* ConfigurationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationViewController.swift; sourceTree = "<group>"; };
+		63563573AB154D81AA61A90E /* libShadowVMCore.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libShadowVMCore.a; sourceTree = "<group>"; };
+		9E5C8B372F08C83E003476BB /* AccessibilityIdentifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityIdentifiers.swift; sourceTree = "<group>"; };
+		9ECC0C032F120DB300EFF53B /* ShadowVM-CEUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ShadowVM-CEUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1B2C3D4E5F6010203040506 /* ShadowVMCECLI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowVMCECLI.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6010203040507 /* ShadowVMCEDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowVMCEDefaults.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6010203040511 /* ShadowVMCEVMController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowVMCEVMController.swift; sourceTree = "<group>"; };
+		B3F1A2C3D4E5F60718293A4B /* ShadowVMCESettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowVMCESettings.swift; sourceTree = "<group>"; };
+		B3F1A2C3D4E5F60718293A4E /* ShadowVMCELogging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowVMCELogging.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		9ECC0C042F120DB300EFF53B /* ShadowVM-CEUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "ShadowVM-CEUITests"; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		493243F82749D9F0003E8999 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9ECC0BF22F0C11C300EFF53B /* Logging in Frameworks */,
+				0A051758384343DA9891BD03 /* libShadowVMCore.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9ECC0C002F120DB300EFF53B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		493243F22749D9F0003E8999 = {
+			isa = PBXGroup;
+			children = (
+				9ECC0BE92F0B872100EFF53B /* 3rd_party */,
+				9ECC0C042F120DB300EFF53B /* ShadowVM-CEUITests */,
+				493243FC2749D9F0003E8999 /* Products */,
+				493243FD2749D9F0003E8999 /* ShadowVM */,
+			);
+			sourceTree = "<group>";
+		};
+		493243FC2749D9F0003E8999 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				493243FB2749D9F0003E8999 /* ShadowVM-CE.app */,
+				9ECC0C032F120DB300EFF53B /* ShadowVM-CEUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		493243FD2749D9F0003E8999 /* ShadowVM */ = {
+			isa = PBXGroup;
+			children = (
+				9ECC0BEE2F0B8DBE00EFF53B /* UI */,
+				4932440A2749D9F1003E8999 /* ShadowVM.entitlements */,
+				493244092749D9F1003E8999 /* Info.plist */,
+				493243FE2749D9F0003E8999 /* AppDelegate.swift */,
+				495E10092856AEE80034F53F /* ConcurrencyShims.swift */,
+				A1B2C3D4E5F6010203040506 /* ShadowVMCECLI.swift */,
+				A1B2C3D4E5F6010203040507 /* ShadowVMCEDefaults.swift */,
+				B3F1A2C3D4E5F60718293A4B /* ShadowVMCESettings.swift */,
+				B3F1A2C3D4E5F60718293A4E /* ShadowVMCELogging.swift */,
+				49F82D412749E80C004D986D /* main.swift */,
+				49F82D45274A0609004D986D /* VirtualMachine.swift */,
+				49F82D47274A0CC5004D986D /* WindowController.swift */,
+				493244042749D9F1003E8999 /* Assets.xcassets */,
+				49D086FB274BBA3700859181 /* Debug.xcconfig */,
+				49D086FD274BBA6800859181 /* Deployment.xcconfig */,
+				49D086FE274BBA8400859181 /* Release.xcconfig */,
+				49D086FC274BBA4A00859181 /* Shared.xcconfig */,
+				49D086FF274BBA9C00859181 /* ShadowVM.xcconfig */,
+			);
+			path = ShadowVM;
+			sourceTree = "<group>";
+		};
+		9ECC0BE92F0B872100EFF53B /* 3rd_party */ = {
+			isa = PBXGroup;
+			children = (
+				63563573AB154D81AA61A90E /* libShadowVMCore.a */,
+			);
+			name = 3rd_party;
+			path = ../3rd_party;
+			sourceTree = "<group>";
+		};
+		9ECC0BEE2F0B8DBE00EFF53B /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				9ECC0BEF2F0B929A00EFF53B /* ViewController */,
+				9E5C8B372F08C83E003476BB /* AccessibilityIdentifiers.swift */,
+				49D08702274BBDF000859181 /* LabeledSlider.swift */,
+				4969636C274C98AE00339822 /* FixedSize.swift */,
+				49D08700274BBD6300859181 /* Menu.swift */,
+				49D08704274BBE2A00859181 /* Toolbar.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		9ECC0BEF2F0B929A00EFF53B /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				49F82D4D274A21C5004D986D /* ConfigurationViewController.swift */,
+				A1B2C3D4E5F6010203040511 /* ShadowVMCEVMController.swift */,
+				49D086F9274A7C3400859181 /* InstallViewController.swift */,
+				49F82D4B274A0D98004D986D /* ViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		493243FA2749D9F0003E8999 /* ShadowVM */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4932440D2749D9F1003E8999 /* Build configuration list for PBXNativeTarget "ShadowVM" */;
+			buildPhases = (
+				493243F72749D9F0003E8999 /* Sources */,
+				493243F82749D9F0003E8999 /* Frameworks */,
+				493243F92749D9F0003E8999 /* Resources */,
+				9EF35C822F10C5B800C1A1B2 /* Link ShadowVMAgent.img */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShadowVM;
+			productName = "ShadowVM-CE";
+			productReference = 493243FB2749D9F0003E8999 /* ShadowVM-CE.app */;
+			productType = "com.apple.product-type.application";
+		};
+		9ECC0C022F120DB300EFF53B /* ShadowVM-CEUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9ECC0C0B2F120DB300EFF53B /* Build configuration list for PBXNativeTarget "ShadowVM-CEUITests" */;
+			buildPhases = (
+				9ECC0BFF2F120DB300EFF53B /* Sources */,
+				9ECC0C002F120DB300EFF53B /* Frameworks */,
+				9ECC0C012F120DB300EFF53B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9ECC0C0A2F120DB300EFF53B /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				9ECC0C042F120DB300EFF53B /* ShadowVM-CEUITests */,
+			);
+			name = "ShadowVM-CEUITests";
+			packageProductDependencies = (
+			);
+			productName = "ShadowVM-CEUITests";
+			productReference = 9ECC0C032F120DB300EFF53B /* ShadowVM-CEUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		493243F32749D9F0003E8999 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2620;
+				LastUpgradeCheck = 1400;
+				TargetAttributes = {
+					493243FA2749D9F0003E8999 = {
+						CreatedOnToolsVersion = 13.2;
+					};
+					9ECC0C022F120DB300EFF53B = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 493243FA2749D9F0003E8999;
+					};
+				};
+			};
+			buildConfigurationList = 493243F62749D9F0003E8999 /* Build configuration list for PBXProject "ShadowVM-CE" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 493243F22749D9F0003E8999;
+			packageReferences = (
+				9ECC0BF02F0C11C300EFF53B /* XCRemoteSwiftPackageReference "swift-log" */,
+			);
+			productRefGroup = 493243FC2749D9F0003E8999 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				493243FA2749D9F0003E8999 /* ShadowVM */,
+				9ECC0C022F120DB300EFF53B /* ShadowVM-CEUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		493243F92749D9F0003E8999 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				493244052749D9F1003E8999 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9ECC0C012F120DB300EFF53B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9EF35C822F10C5B800C1A1B2 /* Link ShadowVMAgent.img */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Link ShadowVMAgent.img";
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/ShadowVMAgent.img",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "RESOURCE_DIR=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nSOURCE_DIR=\"${PROJECT_DIR}/../3rd_party\"\nif [ ! -d \"${RESOURCE_DIR}\" ]; then\n  exit 0\nfi\nagent_img=\"$(/bin/ls -1 \"${SOURCE_DIR}\"/ShadowVMAgent-*.img 2>/dev/null | /usr/bin/sort -V | /usr/bin/tail -n 1)\"\nif [ -z \"${agent_img}\" ]; then\n  agent_img=\"$(/bin/ls -1 \"${RESOURCE_DIR}\"/ShadowVMAgent-*.img 2>/dev/null | /usr/bin/sort -V | /usr/bin/tail -n 1)\"\nfi\nif [ -z \"${agent_img}\" ]; then\n  exit 0\nfi\nrm -f \"${RESOURCE_DIR}\"/ShadowVMAgent-*.img \"${RESOURCE_DIR}\"/ShadowVMAgent.img\ncp -f \"${agent_img}\" \"${RESOURCE_DIR}/\"\ncd \"${RESOURCE_DIR}\"\nln -s \"$(basename \"${agent_img}\")\" ShadowVMAgent.img\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		493243F72749D9F0003E8999 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49D086FA274A7C3400859181 /* InstallViewController.swift in Sources */,
+				49F82D4C274A0D98004D986D /* ViewController.swift in Sources */,
+				49D08703274BBDF000859181 /* LabeledSlider.swift in Sources */,
+				49D08701274BBD6300859181 /* Menu.swift in Sources */,
+				495E100A2856AEE80034F53F /* ConcurrencyShims.swift in Sources */,
+				49F82D422749E80C004D986D /* main.swift in Sources */,
+				A1B2C3D4E5F6010203040508 /* ShadowVMCECLI.swift in Sources */,
+				A1B2C3D4E5F6010203040509 /* ShadowVMCEDefaults.swift in Sources */,
+				A1B2C3D4E5F6010203040512 /* ShadowVMCEVMController.swift in Sources */,
+				B3F1A2C3D4E5F60718293A4C /* ShadowVMCESettings.swift in Sources */,
+				B3F1A2C3D4E5F60718293A4D /* ShadowVMCELogging.swift in Sources */,
+				4969636D274C98AE00339822 /* FixedSize.swift in Sources */,
+				49F82D4E274A21C5004D986D /* ConfigurationViewController.swift in Sources */,
+				49F82D48274A0CC5004D986D /* WindowController.swift in Sources */,
+				49D08705274BBE2A00859181 /* Toolbar.swift in Sources */,
+				49F82D46274A0609004D986D /* VirtualMachine.swift in Sources */,
+				493243FF2749D9F0003E8999 /* AppDelegate.swift in Sources */,
+				9E5C8B382F08C83E003476BB /* AccessibilityIdentifiers.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9ECC0BFF2F120DB300EFF53B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		9ECC0C0A2F120DB300EFF53B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 493243FA2749D9F0003E8999 /* ShadowVM */;
+			targetProxy = 9ECC0C092F120DB300EFF53B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		4932440B2749D9F1003E8999 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 49D086FB274BBA3700859181 /* Debug.xcconfig */;
+			buildSettings = {
+				DEVELOPMENT_TEAM = X4A9GH5NN2;
+			};
+			name = Debug;
+		};
+		4932440C2749D9F1003E8999 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 49D086FE274BBA8400859181 /* Release.xcconfig */;
+			buildSettings = {
+				DEVELOPMENT_TEAM = X4A9GH5NN2;
+			};
+			name = Release;
+		};
+		4932440E2749D9F1003E8999 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 49D086FF274BBA9C00859181 /* ShadowVM.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShadowVM/ShadowVM.entitlements;
+				DEVELOPMENT_TEAM = 25AXJG46M8;
+				INFOPLIST_FILE = ShadowVM/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "ShadowVM-CE";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.gaoxiaodiao.shadowVM-CE";
+				PRODUCT_NAME = "ShadowVM-CE";
+			};
+			name = Debug;
+		};
+		4932440F2749D9F1003E8999 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 49D086FF274BBA9C00859181 /* ShadowVM.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShadowVM/ShadowVM.entitlements;
+				DEVELOPMENT_TEAM = 25AXJG46M8;
+				INFOPLIST_FILE = ShadowVM/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "ShadowVM-CE";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				MACOSX_DEPLOYMENT_TARGET = 15.6;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.gaoxiaodiao.shadowVM-CE";
+				PRODUCT_NAME = "ShadowVM-CE";
+			};
+			name = Release;
+		};
+		9ECC0C0C2F120DB300EFF53B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 25AXJG46M8;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.gaoxiaodiao.ShadowVM-CEUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = ShadowVM;
+			};
+			name = Debug;
+		};
+		9ECC0C0D2F120DB300EFF53B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 25AXJG46M8;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.gaoxiaodiao.ShadowVM-CEUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = ShadowVM;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		493243F62749D9F0003E8999 /* Build configuration list for PBXProject "ShadowVM-CE" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4932440B2749D9F1003E8999 /* Debug */,
+				4932440C2749D9F1003E8999 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4932440D2749D9F1003E8999 /* Build configuration list for PBXNativeTarget "ShadowVM" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4932440E2749D9F1003E8999 /* Debug */,
+				4932440F2749D9F1003E8999 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9ECC0C0B2F120DB300EFF53B /* Build configuration list for PBXNativeTarget "ShadowVM-CEUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9ECC0C0C2F120DB300EFF53B /* Debug */,
+				9ECC0C0D2F120DB300EFF53B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9ECC0BF02F0C11C300EFF53B /* XCRemoteSwiftPackageReference "swift-log" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-log";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.8.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9ECC0BF12F0C11C300EFF53B /* Logging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9ECC0BF02F0C11C300EFF53B /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = Logging;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 493243F32749D9F0003E8999 /* Project object */;
+}

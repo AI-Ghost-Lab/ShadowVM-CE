@@ -1,0 +1,282 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CE_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+MONOREPO_ROOT=""
+if [[ -d "${CE_ROOT}/../src/ShadowVMCore" ]]; then
+	MONOREPO_ROOT="$(cd "${CE_ROOT}/.." && pwd)"
+fi
+
+ENV_FILE=""
+if [[ -f "${CE_ROOT}/.env" ]]; then
+	ENV_FILE="${CE_ROOT}/.env"
+elif [[ -n "${MONOREPO_ROOT}" && -f "${MONOREPO_ROOT}/.env" ]]; then
+	ENV_FILE="${MONOREPO_ROOT}/.env"
+fi
+
+if [[ -n "${ENV_FILE}" ]]; then
+	# shellcheck disable=SC1090
+	source "${ENV_FILE}"
+fi
+
+OUTPUT_DIR="${CE_OUTPUT_ROOT:-}"
+if [[ -z "${OUTPUT_DIR}" ]]; then
+	if [[ -n "${MONOREPO_ROOT}" && -d "${MONOREPO_ROOT}/output" ]]; then
+		OUTPUT_DIR="${MONOREPO_ROOT}/output"
+	else
+		OUTPUT_DIR="${CE_ROOT}/output"
+	fi
+fi
+SHADOWVMCE_OUTPUT_DIR="${OUTPUT_DIR}/ShadowVM-CE"
+SHADOWVMCE_APP="${SHADOWVMCE_OUTPUT_DIR}/ShadowVM-CE.app"
+OUTPUT_BIN_DIR="${OUTPUT_DIR}/bin/release"
+ENTITLEMENTS="${CE_ROOT}/src/ShadowVM/ShadowVM.entitlements"
+VERSION_FILE="${SHADOWVMCE_OUTPUT_DIR}/.release_version"
+
+CE_STEP="${CE_STEP:-all}"
+CE_VERSION="${CE_VERSION:-}"
+CE_AGENT_IMG="${CE_AGENT_IMG:-}"
+
+DMG_STAGING=""
+DMG_TEMP=""
+DMG_MOUNT=""
+
+cleanup() {
+	if [[ -n "${DMG_MOUNT}" ]]; then
+		/usr/bin/hdiutil detach "${DMG_MOUNT}" >/dev/null 2>&1 || true
+	fi
+	if [[ -n "${DMG_TEMP}" ]]; then
+		rm -f "${DMG_TEMP}"
+	fi
+	if [[ -n "${DMG_STAGING}" ]]; then
+		rm -rf "${DMG_STAGING}"
+	fi
+}
+trap cleanup EXIT
+
+load_version_if_needed() {
+	if [[ -n "${CE_VERSION}" ]]; then
+		return
+	fi
+	if [[ -f "${VERSION_FILE}" ]]; then
+		CE_VERSION="$(cat "${VERSION_FILE}")"
+	fi
+	if [[ -z "${CE_VERSION}" ]]; then
+		echo "[ce] CE_VERSION is required (e.g. CE_VERSION=1.0.1)" >&2
+		exit 1
+	fi
+}
+
+save_version() {
+	mkdir -p "${SHADOWVMCE_OUTPUT_DIR}"
+	echo "${CE_VERSION}" > "${VERSION_FILE}"
+}
+
+resolve_sign_identity() {
+	CE_SIGN_IDENTITY="${CE_SIGN_IDENTITY:-${SIGN_IDENTITY:-}}"
+	if [[ -z "${CE_SIGN_IDENTITY}" ]]; then
+		echo "[ce] CE_SIGN_IDENTITY or SIGN_IDENTITY is required" >&2
+		exit 1
+	fi
+}
+
+resolve_notary_profile() {
+	NOTARY_PROFILE="${NOTARY_PROFILE:-}"
+	if [[ -z "${NOTARY_PROFILE}" ]]; then
+		echo "[ce] NOTARY_PROFILE is required" >&2
+		exit 1
+	fi
+}
+
+find_latest_img() {
+	local dir="$1"
+	if [[ ! -d "${dir}" ]]; then
+		return
+	fi
+	/bin/ls -1 "${dir}"/ShadowVMAgent-*.img 2>/dev/null | /usr/bin/sort -V | /usr/bin/tail -n 1
+}
+
+resolve_agent_img() {
+	if [[ -n "${CE_AGENT_IMG}" ]]; then
+		if [[ ! -f "${CE_AGENT_IMG}" ]]; then
+			echo "[ce] CE_AGENT_IMG not found: ${CE_AGENT_IMG}" >&2
+			exit 1
+		fi
+		echo "${CE_AGENT_IMG}"
+		return
+	fi
+	local img
+	img="$(find_latest_img "${OUTPUT_DIR}")"
+	if [[ -z "${img}" ]]; then
+	img="$(find_latest_img "${CE_ROOT}/3rd_party")"
+	fi
+	if [[ -z "${img}" ]]; then
+		echo "[ce] ShadowVMAgent img not found; set CE_AGENT_IMG or add one to ${CE_ROOT}/3rd_party" >&2
+		exit 1
+	fi
+	echo "${img}"
+}
+
+clean_build_dir() {
+	rm -rf "${SHADOWVMCE_OUTPUT_DIR}"
+	rm -rf "${OUTPUT_BIN_DIR}/ShadowVM-CE.app"
+}
+
+inject_agent_image() {
+	local app_path="$1"
+	local resources_dir="${app_path}/Contents/Resources"
+	if [[ ! -d "${resources_dir}" ]]; then
+		echo "[ce] resources dir not found: ${resources_dir}" >&2
+		exit 1
+	fi
+	local agent_img
+	agent_img="$(resolve_agent_img)"
+	local agent_basename
+	agent_basename="$(basename "${agent_img}")"
+
+	echo "[ce] injecting agent image: ${agent_basename}"
+	shopt -s nullglob
+	rm -f "${resources_dir}"/ShadowVMAgent-*.img "${resources_dir}"/ShadowVMAgent.img
+	shopt -u nullglob
+	cp -f "${agent_img}" "${resources_dir}/"
+	ln -s "${agent_basename}" "${resources_dir}/ShadowVMAgent.img"
+
+	if [[ ! -f "${resources_dir}/${agent_basename}" ]]; then
+		echo "[ce] agent image missing after copy: ${resources_dir}/${agent_basename}" >&2
+		exit 1
+	fi
+	if [[ ! -L "${resources_dir}/ShadowVMAgent.img" ]]; then
+		echo "[ce] ShadowVMAgent.img symlink missing" >&2
+		exit 1
+	fi
+	local link_target
+	link_target="$(/usr/bin/readlink "${resources_dir}/ShadowVMAgent.img" || true)"
+	if [[ "${link_target}" != "${agent_basename}" ]]; then
+		echo "[ce] ShadowVMAgent.img points to ${link_target}, expected ${agent_basename}" >&2
+		exit 1
+	fi
+}
+
+build_app() {
+	load_version_if_needed
+	clean_build_dir
+	echo "[ce] building ShadowVM-CE (Release)"
+	make -C "${CE_ROOT}" ShadowVM-CE SWIFT_BUILD_CONFIG=release OUTPUT_DIR="${OUTPUT_DIR}"
+	if [[ ! -d "${SHADOWVMCE_APP}" ]]; then
+		echo "[ce] app not found: ${SHADOWVMCE_APP}" >&2
+		exit 1
+	fi
+	inject_agent_image "${SHADOWVMCE_APP}"
+	save_version
+}
+
+sign_app() {
+	resolve_sign_identity
+	if [[ ! -d "${SHADOWVMCE_APP}" ]]; then
+		echo "[ce] app not found: ${SHADOWVMCE_APP}" >&2
+		exit 1
+	fi
+	if [[ ! -f "${ENTITLEMENTS}" ]]; then
+		echo "[ce] entitlements not found: ${ENTITLEMENTS}" >&2
+		exit 1
+	fi
+	shopt -s nullglob
+	rm -f "${SHADOWVMCE_APP}/Contents/MacOS/__preview.dylib" "${SHADOWVMCE_APP}/Contents/MacOS"/*.debug.dylib
+	shopt -u nullglob
+
+	echo "[ce] signing embedded dylibs"
+	if [[ -d "${SHADOWVMCE_APP}/Contents/MacOS" ]]; then
+		while IFS= read -r -d '' dylib; do
+			codesign --force --sign "${CE_SIGN_IDENTITY}" --timestamp "${dylib}"
+		done < <(/usr/bin/find "${SHADOWVMCE_APP}/Contents/MacOS" -maxdepth 1 -type f -name "*.dylib" -print0)
+	fi
+
+	echo "[ce] codesign ShadowVM-CE.app"
+	codesign --force --options runtime --entitlements "${ENTITLEMENTS}" --sign "${CE_SIGN_IDENTITY}" --timestamp "${SHADOWVMCE_APP}"
+	codesign --verify --deep --strict --verbose=2 "${SHADOWVMCE_APP}"
+
+	mkdir -p "${OUTPUT_BIN_DIR}"
+	rm -rf "${OUTPUT_BIN_DIR}/ShadowVM-CE.app"
+	cp -R "${SHADOWVMCE_APP}" "${OUTPUT_BIN_DIR}/ShadowVM-CE.app"
+}
+
+create_dmg() {
+	load_version_if_needed
+	if [[ ! -d "${SHADOWVMCE_APP}" ]]; then
+		echo "[ce] app not found: ${SHADOWVMCE_APP}" >&2
+		exit 1
+	fi
+	local dmg_output
+	dmg_output="${OUTPUT_DIR}/ShadowVM-CE-${CE_VERSION}.dmg"
+
+	echo "[ce] creating dmg: ${dmg_output}"
+	DMG_STAGING="$(mktemp -d "${TMPDIR:-/tmp}/shadowvm-ce-dmg.XXXXXX")"
+	cp -R "${SHADOWVMCE_APP}" "${DMG_STAGING}/ShadowVM-CE.app"
+	ln -s /Applications "${DMG_STAGING}/Applications"
+
+	local staging_kb staging_mb headroom_mb total_mb
+	staging_kb="$(/usr/bin/du -sk "${DMG_STAGING}" | awk '{print $1}')"
+	staging_mb="$(( (staging_kb + 1023) / 1024 ))"
+	headroom_mb="$(( staging_mb / 5 ))"
+	if (( headroom_mb < 64 )); then
+		headroom_mb=64
+	fi
+	total_mb="$(( staging_mb + headroom_mb ))"
+
+	DMG_TEMP="${OUTPUT_DIR}/ShadowVM-CE-${CE_VERSION}.tmp.dmg"
+	rm -f "${DMG_TEMP}" "${dmg_output}"
+	/usr/bin/hdiutil create -size "${total_mb}m" -fs HFS+ -volname "ShadowVM-CE" -ov "${DMG_TEMP}"
+	DMG_MOUNT="$(/usr/bin/hdiutil attach -readwrite -nobrowse -noverify "${DMG_TEMP}" | awk 'END{print $3}')"
+	if [[ -z "${DMG_MOUNT}" ]]; then
+		echo "[ce] failed to mount dmg" >&2
+		exit 1
+	fi
+	/usr/bin/ditto "${DMG_STAGING}/ShadowVM-CE.app" "${DMG_MOUNT}/ShadowVM-CE.app"
+	rm -f "${DMG_MOUNT}/Applications"
+	ln -s /Applications "${DMG_MOUNT}/Applications"
+	/usr/bin/hdiutil detach "${DMG_MOUNT}"
+	DMG_MOUNT=""
+	/usr/bin/hdiutil convert "${DMG_TEMP}" -format UDZO -ov -o "${dmg_output}"
+	rm -f "${DMG_TEMP}"
+	DMG_TEMP=""
+}
+
+notarize_dmg() {
+	load_version_if_needed
+	resolve_notary_profile
+	local dmg_output
+	dmg_output="${OUTPUT_DIR}/ShadowVM-CE-${CE_VERSION}.dmg"
+	if [[ ! -f "${dmg_output}" ]]; then
+		echo "[ce] dmg not found: ${dmg_output}" >&2
+		exit 1
+	fi
+	echo "[ce] notarizing dmg"
+	xcrun notarytool submit "${dmg_output}" --wait --keychain-profile "${NOTARY_PROFILE}"
+	xcrun stapler staple "${dmg_output}"
+}
+
+case "${CE_STEP}" in
+	build)
+		build_app
+		;;
+	sign)
+		sign_app
+		;;
+	dmg)
+		create_dmg
+		;;
+	notarize)
+		notarize_dmg
+		;;
+	all)
+		build_app
+		sign_app
+		create_dmg
+		notarize_dmg
+		;;
+	*)
+		echo "[ce] unknown CE_STEP: ${CE_STEP}" >&2
+		exit 1
+		;;
+esac
