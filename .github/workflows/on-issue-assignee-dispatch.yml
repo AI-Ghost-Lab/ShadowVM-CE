@@ -1,26 +1,33 @@
-name: On issue assignee change
+name: Dispatch on issue assignee change
 
 on:
   issues:
     types: [assigned]
 
 jobs:
-  handle:
-    # Optional gate: set repo variable TARGET_ASSIGNEE to limit execution.
+  dispatch:
     if: vars.TARGET_ASSIGNEE == '' || contains(github.event.client_payload.assignees, vars.TARGET_ASSIGNEE)
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
-      - name: Show payload
-        run: |
-          echo "Source: ${{ github.event.client_payload.source_repo }}"
-          echo "Action: ${{ github.event.client_payload.action }}"
-          echo "Issue: #${{ github.event.client_payload.issue_number }}"
-          echo "URL: ${{ github.event.client_payload.issue_url }}"
-          echo "Assignee: ${{ github.event.client_payload.assignee }}"
-          echo "Assignees: ${{ toJson(github.event.client_payload.assignees) }}"
+      - name: Send repository_dispatch to target repo
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.DISPATCH_TOKEN }}
+          script: |
+            const assignees = (context.payload.issue.assignees || []).map(a => a.login)
 
-      - name: Run your command
-        run: |
-          echo "TODO: replace with your command"
+            await github.rest.repos.createDispatchEvent({
+              owner: "AI-Ghost-Lab",
+              repo: "Tgxd-coding-assembly-line",
+              event_type: "issue_assignee_changed",
+              client_payload: {
+                source_repo: `${context.repo.owner}/${context.repo.repo}`,
+                action: context.payload.action,
+                issue_number: context.payload.issue.number,
+                issue_url: context.payload.issue.html_url,
+                assignee: context.payload.assignee?.login ?? null,
+                assignees
+              }
+            })
