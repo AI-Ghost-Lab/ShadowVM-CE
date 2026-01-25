@@ -1,8 +1,8 @@
 name: On issue assignee change
 
 on:
-  repository_dispatch:
-    types: [issue_assignee_changed]
+  issues:
+    types: [assigned]
 
 jobs:
   handle:
