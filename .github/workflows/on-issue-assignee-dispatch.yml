@@ -1,0 +1,26 @@
+name: On issue assignee change
+
+on:
+  repository_dispatch:
+    types: [issue_assignee_changed]
+
+jobs:
+  handle:
+    # Optional gate: set repo variable TARGET_ASSIGNEE to limit execution.
+    if: vars.TARGET_ASSIGNEE == '' || contains(github.event.client_payload.assignees, vars.TARGET_ASSIGNEE)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Show payload
+        run: |
+          echo "Source: ${{ github.event.client_payload.source_repo }}"
+          echo "Action: ${{ github.event.client_payload.action }}"
+          echo "Issue: #${{ github.event.client_payload.issue_number }}"
+          echo "URL: ${{ github.event.client_payload.issue_url }}"
+          echo "Assignee: ${{ github.event.client_payload.assignee }}"
+          echo "Assignees: ${{ toJson(github.event.client_payload.assignees) }}"
+
+      - name: Run your command
+        run: |
+          echo "TODO: replace with your command"
