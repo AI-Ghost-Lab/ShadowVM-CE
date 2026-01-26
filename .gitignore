@@ -3,3 +3,4 @@ src/output
 /output
 .DS_Store
 /src/ShadowVM-CE.xcodeproj/project.xcworkspace/xcuserdata
+/.artifacts
