@@ -1,0 +1,13 @@
+PARAMS
+action: resume
+backend: codex
+run_id: issue6_fix_20260126T000000Z_a1b2c3d
+step_id: S1
+round: 1
+thread_id: 019bf869-fb84-7ac2-b788-80567029cd6c
+
+PROMPT
+{}
+
+REQUEST_JSON
+{}

@@ -1,0 +1,23 @@
+title:	[Core] Implement VM State Persistence (Save / Restore)
+state:	OPEN
+author:	gaoxiaodiao
+labels:	
+comments:	0
+assignees:	
+projects:	ShadowVM-CE · Post v1.0 Optimization (Backlog)
+milestone:	
+number:	6
+--
+Currently, the virtual machine does **not support VM state persistence.**
+
+Once the VM window is closed, the virtual machine is fully powered off, and all runtime state is lost. On the next launch, the VM always starts from a cold boot.
+
+To improve usability and align with modern VM workflows (e.g. UTM), we should provide a mechanism to **persist VM state (vmstate) to a local file** when the VM is suspended or the window is closed, and **automatically restore that state on the next launch.**
+
+This would allow users to:
+
+- Close the VM window without losing runtime state
+- Resume the VM exactly where it left off
+- Avoid unnecessary reboot and reinitialization costs
+
+The expected behavior is similar to **UTM-style suspend / resume**, where the VM memory and device state are serialized to disk and transparently restored on startup.

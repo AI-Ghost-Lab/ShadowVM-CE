@@ -1,0 +1,26 @@
+{
+  "task_kind": "step",
+  "task_id": "issue6_fix",
+  "run_id": "issue6_fix_20260126T000000Z_a1b2c3d",
+  "step_id": "S1",
+  "step_title": "View issue #6 via gh and implement fix",
+  "step_description": "Use the gh CLI to view issue #6 in this repo, identify the root cause, implement the required fix, and verify with the most appropriate tests or checks. Ensure changes are minimal and scoped to the issue.\n\nOutput Contract (MUST follow exactly, missing any section => REWORK):\n1. Step Identification\n2. Summary of Work\n3. Files Changed\n4. Commands Executed\n5. Verification Results\n6. Logs / Artifacts\n7. Risks & Limitations\n8. Reproduction Guide\n\nLong-running Execution Rule (MUST follow, violation => REWORK):\n- If you run any command that may take >5 minutes, ensure visible progress output at least every 5 minutes.\n- If the command is normally quiet, add a heartbeat (timestamped line) while it runs or enable verbose/progress flags.\n- Do NOT allow a silent period of 20+ minutes with no output.",
+  "acceptance_criteria": [
+    "Issue #6 is reviewed via gh and the fix directly addresses the stated problem.",
+    "Only necessary files are modified; no unrelated changes.",
+    "Verification is performed with relevant commands, and results are reported with evidence paths/logs."
+  ],
+  "context": {
+    "repo_overview": "ShadowVM-CE source repo; fix issue using gh issue details.",
+    "run_dir": ".artifacts/agent_runs/issue6_fix_20260126T000000Z_a1b2c3d/",
+    "related_files": [],
+    "constraints": [
+      "Use gh CLI to view issue #6.",
+      "Do not modify unrelated files (e.g., skill files, shim sources, .artifacts/, tool metadata) unless explicitly required by this step"
+    ]
+  },
+  "expected_outputs": [
+    "Code changes addressing issue #6",
+    "Test/verification output logs or paths"
+  ]
+}

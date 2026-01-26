@@ -1,0 +1,4 @@
+{"type":"thread.started","thread_id":"019bf869-fb84-7ac2-b788-80567029cd6c"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"I don’t see a task in the last message. What would you like me to do?"}}
+{"type":"turn.completed","usage":{"input_tokens":1657870,"cached_input_tokens":1523328,"output_tokens":20035}}

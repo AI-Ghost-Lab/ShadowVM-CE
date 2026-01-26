@@ -2,6 +2,7 @@ import AppKit
 import Darwin
 import Foundation
 import ShadowVMCore
+import Virtualization
 #if canImport(CryptoKit)
   import CryptoKit
 #endif
@@ -83,6 +84,7 @@ final class ShadowVMCEVMController {
   private let clipboardPollInterval: UInt64 = 500_000_000
   private let eventLogMask = EventLogMask.fallback
   private let tlvLogMask = TLVTypeLogMask.fallback
+  private static let vmStateFilename = "vmstate.vzs"
 
   private init() {}
 
@@ -103,12 +105,50 @@ final class ShadowVMCEVMController {
   }
 
   func start(_ vm: VirtualMachine) async throws {
+    if #available(macOS 14.0, *) {
+      if try await restoreVMStateIfPresent(for: vm) {
+        startClipboardPollingIfNeeded(for: vm)
+        return
+      }
+    }
     try await runtime.startVM(id: vm.metadata.id)
     startClipboardPollingIfNeeded(for: vm)
   }
 
   func stop(_ vm: VirtualMachine) async throws {
     try await runtime.stopVM(id: vm.metadata.id)
+    stopClipboardPolling(for: vm.metadata.id)
+  }
+
+  func suspend(_ vm: VirtualMachine) async throws {
+    guard vm.running || vm.paused else {
+      return
+    }
+    guard #available(macOS 14.0, *) else {
+      GXDLogInfo(
+        "[ui-ce] vmstate save skipped vm=\(vm.metadata.id.uuidString) reason=unsupported_macos"
+      )
+      try await runtime.stopVM(id: vm.metadata.id)
+      stopClipboardPolling(for: vm.metadata.id)
+      return
+    }
+    let stateURL = vmStateURL(for: vm)
+    guard let vzVM = runtime.vmManager.vzVirtualMachine(id: vm.metadata.id) else {
+      throw ShadowVMCEVMControllerError(message: "Virtualization VM instance is unavailable.")
+    }
+    removeExistingVMState(at: stateURL)
+    GXDLogInfo(
+      "[ui-ce] vmstate save begin vm=\(vm.metadata.id.uuidString) path=\(stateURL.path)"
+    )
+    do {
+      try await saveMachineState(vzVM, to: stateURL)
+    } catch {
+      removeExistingVMState(at: stateURL)
+      throw error
+    }
+    GXDLogInfo(
+      "[ui-ce] vmstate save end vm=\(vm.metadata.id.uuidString) path=\(stateURL.path)"
+    )
     stopClipboardPolling(for: vm.metadata.id)
   }
 
@@ -171,6 +211,75 @@ final class ShadowVMCEVMController {
       GXDLogError(
         "[ui-ce] persist metadata failed vm=\(vm.metadata.id.uuidString) error=\(error.localizedDescription)"
       )
+    }
+  }
+
+  private func vmStateURL(for vm: VirtualMachine) -> URL {
+    vm.url.appendingPathComponent(Self.vmStateFilename)
+  }
+
+  private func removeExistingVMState(at url: URL) {
+    guard FileManager.default.fileExists(atPath: url.path) else {
+      return
+    }
+    do {
+      try FileManager.default.removeItem(at: url)
+    } catch {
+      GXDLogError("[ui-ce] vmstate cleanup failed path=\(url.path) error=\(error.localizedDescription)")
+    }
+  }
+
+  @available(macOS 14.0, *)
+  private func restoreVMStateIfPresent(for vm: VirtualMachine) async throws -> Bool {
+    let stateURL = vmStateURL(for: vm)
+    guard FileManager.default.fileExists(atPath: stateURL.path) else {
+      return false
+    }
+    guard let vzVM = runtime.vmManager.vzVirtualMachine(id: vm.metadata.id) else {
+      throw ShadowVMCEVMControllerError(message: "Virtualization VM instance is unavailable.")
+    }
+    GXDLogInfo(
+      "[ui-ce] vmstate restore begin vm=\(vm.metadata.id.uuidString) path=\(stateURL.path)"
+    )
+    do {
+      try await restoreMachineState(vzVM, from: stateURL)
+      removeExistingVMState(at: stateURL)
+      GXDLogInfo(
+        "[ui-ce] vmstate restore end vm=\(vm.metadata.id.uuidString) path=\(stateURL.path)"
+      )
+      return true
+    } catch {
+      GXDLogError(
+        "[ui-ce] vmstate restore failed vm=\(vm.metadata.id.uuidString) path=\(stateURL.path) error=\(error.localizedDescription)"
+      )
+      removeExistingVMState(at: stateURL)
+      return false
+    }
+  }
+
+  @available(macOS 14.0, *)
+  private func saveMachineState(_ vzVM: VZVirtualMachine, to url: URL) async throws {
+    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+      vzVM.saveMachineStateTo(url: url) { error in
+        if let error {
+          continuation.resume(throwing: error)
+        } else {
+          continuation.resume(returning: ())
+        }
+      }
+    }
+  }
+
+  @available(macOS 14.0, *)
+  private func restoreMachineState(_ vzVM: VZVirtualMachine, from url: URL) async throws {
+    try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+      vzVM.restoreMachineStateFrom(url: url) { error in
+        if let error {
+          continuation.resume(throwing: error)
+        } else {
+          continuation.resume(returning: ())
+        }
+      }
     }
   }
 

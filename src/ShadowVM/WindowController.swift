@@ -67,7 +67,7 @@ class WindowController: NSWindowController, NSWindowDelegate {
   }
 
   func windowShouldClose(_ sender: NSWindow) -> Bool {
-    guard virtualMachine.running else {
+    guard virtualMachine.running || virtualMachine.paused else {
       return true
     }
     if isStopping {
@@ -76,7 +76,7 @@ class WindowController: NSWindowController, NSWindowDelegate {
     isStopping = true
     Task {
       do {
-        try await vmController.stop(virtualMachine)
+        try await vmController.suspend(virtualMachine)
         await MainActor.run {
           isStopping = false
           sender.performClose(nil)
