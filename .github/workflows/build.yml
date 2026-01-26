@@ -17,4 +17,6 @@ jobs:
         run: xcodebuild -version
 
       - name: Build ShadowVM-CE
-        run: make ShadowVM-CE
+        run: |
+          git lfs pull
+          make ShadowVM-CE
