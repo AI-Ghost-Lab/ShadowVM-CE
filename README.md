@@ -2,6 +2,7 @@
 
 ShadowVM-CE is a macOS 12+ (Apple Silicon) virtual machine manager that ships with a native UI and a command-line interface (CLI).
 It builds a signed macOS app bundle and supports provisioning VMs from IPSW images.
+The CLI and UI share the same app bundle; CLI start/stop requests can forward to a running UI instance.
 
 ## Features
 - Create, install, start, stop, and query Apple Virtualization-based VMs.
@@ -33,11 +34,15 @@ Build outputs:
 - Debug app: `output/bin/debug/ShadowVM-CE.app`
 - Release app (after signing step): `output/bin/release/ShadowVM-CE.app`
 
+You can override build configuration and output root with `SWIFT_BUILD_CONFIG=release` and `OUTPUT_DIR=<path>`.
+
 ## CLI usage
 The CLI is embedded in the app bundle. After building:
 ```bash
 output/bin/debug/ShadowVM-CE.app/Contents/MacOS/ShadowVM-CE --help
 ```
+By default, `vm create` stores bundles under `~/.shadowvm-ce/<name>.vmapple` and `--bundle` will auto-append
+the `.vmapple` extension when missing.
 
 Commands and options (from the CLI usage output):
 - `vm create --name <name> [--bundle <path>] [--cpu <n>] [--memory <mb>] [--width <px>] [--height <px>] [--scale <n>] [--json]`
@@ -96,8 +101,10 @@ Release outputs:
 
 ## Data & logs
 - Data/config root: `~/.shadowvm-ce` (configured at app startup).
-- Logs are written to the `shadowvm-ce.log` file under the configured logs directory.
-  Use the app menu item **Debug → Open Log Directory** to locate it.
+- Settings file: `~/.shadowvm-ce/settings.json`.
+- Default VM bundle location: `~/.shadowvm-ce/*.vmapple`.
+- Logs are written to the `shadowvm-ce.log` file under the configured logs directory
+  (use the app menu item **Debug → Open Log Directory** to locate it).
 
 ## Troubleshooting
 - Missing `ShadowVMAgent-*.img`: add one under `3rd_party/` or set `CE_AGENT_IMG`.
